@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<link rel="stylesheet" href="../common/css/style-001.css">
+    <title>Receiver demo</title>
+	<script>
+		var bc = new BroadcastChannel('obs-lower-thirds-channel');
+		var i = 0;
+		var frutas = ['','','','','',''];
+		bc.onmessage = function (ev) {
+			i = i+1;
+
+			received_data=ev.data.split("|");
+			var ultimaPedra =  received_data[0];
+
+			frutas[5] = frutas[4];
+				frutas[4] = frutas[3];
+				frutas[3] = frutas[2];
+				frutas[2] = frutas[1];
+				frutas[1] = frutas[0];
+				frutas[0] = ultimaPedra;
+
+
+
+
+			document.getElementById("ultima-pedra-chamada").innerHTML = frutas[0];
+			document.getElementById("pedra2").innerHTML = frutas[1];
+			document.getElementById("pedra3").innerHTML = frutas[2];
+			document.getElementById("pedra4").innerHTML = frutas[3];
+			document.getElementById("pedra5").innerHTML = frutas[4];
+			document.getElementById("pedra6").innerHTML = frutas[5];
+			position = received_data[2];
+			animation = received_data[3];
+			console.log ('Name: ' + received_data[0] + ', Function: ' + received_data[1] + ', Position: ' + received_data[2] + ', Animation: ' + received_data[3]);
+		if (animation == 'animateIn') {document.getElementById("lower-third").classList.remove("animateOut");document.getElementById("lower-third").classList.add("animateIn");};
+		if (animation == 'animateOut') {document.getElementById("lower-third").classList.remove("animateIn");document.getElementById("lower-third").classList.add("animateOut");};
+		if (position == 'left') {document.getElementById("lower-third").classList.remove("right");document.getElementById("lower-third").classList.add("left");};
+		if (position == 'right') {document.getElementById("lower-third").classList.remove("left");document.getElementById("lower-third").classList.add("right");};
+
+		}
+	</script>
+  </head>
+  <body class="browser-source lower-thirds">
+	<div id="lower-third">
+    	<div class="left-block">
+				<img src="../common/images/bingo.png">
+			</div>
+			<div class="right-block">
+				<div id="ultima-pedra-chamada" class="teste"></div>
+				<div id="pedra2" class="teste2"></div>
+				<div id="pedra3" class="teste3"></div>
+				<div id="pedra4" class="teste4"></div>
+				<div id="pedra5" class="teste5"></div>
+				<div id="pedra6" class="teste6"></div>
+			</div>
+		</div>
+	</div>
+  </body>
+</html>

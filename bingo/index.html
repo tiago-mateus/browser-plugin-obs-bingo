@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../common/css/bingo.css">
+  <script src="../common/js/confetti.min.js"></script>
+  <style>
+    
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="ganhador" id="ganhador"></div>
+    <div class="container-bingo">
+      <table class="bingo-table">
+        <thead>
+          <tr>
+            <th>B</th>
+            <th>I</th>
+            <th>N</th>
+            <th>G</th>
+            <th>O</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabela = document.querySelector('.bingo-table');
+      const letras = ['B', 'I', 'N', 'G', 'O'];
+      const numLinhas = 15;
+      const numColunas = 5;
+
+      for (let i = 0; i < numLinhas; i++) {
+        const linha = document.createElement('tr');
+
+        for (let j = 0; j < numColunas; j++) {
+          const coluna = document.createElement('td');
+          const numero = i + (j * numLinhas) + 1;
+
+          coluna.classList.add('bingo-cell');
+          coluna.textContent = numero;
+
+          linha.appendChild(coluna);
+        }
+
+        tabela.querySelector('tbody').appendChild(linha);
+      }
+
+      const ths = document.createElement('tr');
+
+      tabela.querySelector('thead').appendChild(ths);
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const canal = new BroadcastChannel('obs-lower-thirds-channel');
+      const container = document.querySelector('.container-bingo');
+      const winnerOverlay = document.getElementById('ganhador');
+
+      function lidarComMensagem(evento) {
+        const numero = parseInt(evento.data.numero);
+        const celulas = document.querySelectorAll('.bingo-cell');
+        if (Number.isInteger(numero)) {
+
+          if(evento.data.name == "X"){
+
+            celulas.forEach((celula) => {
+            if (parseInt(celula.textContent) === numero) {
+              celula.classList.remove('red');
+            }
+          });
+          }else{
+            celulas.forEach((celula) => {
+            if (parseInt(celula.textContent) === numero) {
+              celula.classList.add('red');
+            }
+          });
+          }
+          
+
+        } else {
+
+          if (evento.data.name == "zerar") {
+
+            celulas.forEach((celula) => {
+              celula.classList.remove('red');
+            });
+
+          } else {
+
+
+            // Exibir o nome do ganhador
+            const ganhador = evento.data.name;
+            winnerOverlay.textContent = ganhador;
+
+            // Aplicar efeito de desfoque
+            container.classList.add('blur-effect');
+            winnerOverlay.classList.add('show');
+
+            
+
+          
+  
+            var count = 200;
+            var defaults = {
+              origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+              confetti(Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio)
+              }));
+            }
+
+            fire(0.25, {
+              spread: 26,
+              startVelocity: 55,
+            });
+            fire(0.2, {
+              spread: 60,
+            });
+            fire(0.35, {
+              spread: 100,
+              decay: 0.91,
+              scalar: 0.8
+            });
+            fire(0.1, {
+              spread: 120,
+              startVelocity: 25,
+              decay: 0.92,
+              scalar: 1.2
+            });
+            fire(0.1, {
+              spread: 120,
+              startVelocity: 45,
+            });
+
+
+            var duration = 5 * 1000;
+var animationEnd = Date.now() + duration;
+var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+function randomInRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+var interval = setInterval(function() {
+  var timeLeft = animationEnd - Date.now();
+
+  if (timeLeft <= 0) {
+    return clearInterval(interval);
+  }
+
+  var particleCount = 50 * (timeLeft / duration);
+  // since particles fall down, start a bit higher than random
+  confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+  confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+}, 250);
+
+            setTimeout(() => {
+              // Remover desfoque, camada de sobreposição e confetes após 10 segundos
+              container.classList.remove('blur-effect');
+              winnerOverlay.classList.remove('show');
+            }, 10000);
+          }
+        }
+      }
+
+      canal.addEventListener('message', lidarComMensagem);
+    });
+  </script>
+</body>
+
+</html>
